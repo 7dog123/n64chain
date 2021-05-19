@@ -3,7 +3,7 @@ language: c
 cache: ccache
 
 compiler:
-	-gcc
+	- gcc
 
 arch:
 	- armhf
