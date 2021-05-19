@@ -12,13 +12,12 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest, msys2]
-    defaults:
-     run:
-      shell: ${{ matrix.os[1] }} {0}
-
+     
     steps:
     - uses: actions/checkout@v2
-
+		with:
+        fetch-depth: 0
+        
     - name: Install Ubuntu texinfo bison flex
       if: matrix.os[0] == 'ubuntu-latest'
       run: |
