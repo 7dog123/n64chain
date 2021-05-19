@@ -4,31 +4,46 @@ on:
   push:
   pull_request:
   repository_dispatch:
-    types: [run_build]
+    types: [run_build, run_release]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os[0] }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [[macos-latest, bash], [ubuntu-latest, bash], [windows-latest, msys2]]
+    defaults:
+     run:
+      shell: ${{ matrix.os[1] }} {0}
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    
-    - name: Install Ubuntu texinfo bison flex libucl-dev
-      if: matrix.os == 'ubuntu-latest'
+
+    - name: Install Ubuntu texinfo bison flex
+      if: matrix.os[0] == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get -y install build-essential libmpfr-dev libmpc-dev libgmp-dev flex bison texinfo gettext checkinstall
-    
+        sudo apt-get -y install texinfo bison flex libgmp-dev libmpfr-dev libmpc-dev checkinstall
+    - name: Install Mac texinfo bison flex
+      if: matrix.os[0] == 'macOS-latest'
+      run: |
+        brew update
+        brew install texinfo checkinstall bison flex gnu-sed gsl gmp mpfr
+    - name: Install MSYS2 texinfo bison flex
+      if: matrix.os[0] == 'windows-latest'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW32
+        install: base-devel checkinstall wget make texinfo flex bison pbinutils mingw-w64-i686-gcc mpc-devel
+        update: true
+        shell: msys2 {0}
+
     - name: Runs all the stages in the shell
       run: |
-        ./build-package.sh 
-        ./build-newlib-pkg.sh 
-        ./build-libgcc-pkg.sh
+        export N64=$PWD/crashsdk
+        export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+        export PATH=$PATH:$N64/crashsdk/bin
+        ./toolchain.sh
 
     - name: Get short SHA
       id: slug
