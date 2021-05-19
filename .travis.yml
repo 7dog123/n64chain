@@ -1,0 +1,39 @@
+language: c
+
+cache: ccache
+
+compiler:
+	-gcc
+
+arch:
+	- armhf
+	
+sudo: required
+dist: bionic
+
+matrix:
+	include:
+		- os: linux
+			arch: armhf
+		- compiler: gcc
+		
+addons:
+	packages:
+		- build-essential
+		- libmpfr-dev
+		- libmpc-dev
+		- libgmp-dev
+		- flex
+		- bison
+		- texinfo
+		- checkinstall
+
+script: ./build-package.sh 
+
+script: ./build-newlib-pkg.sh
+
+script: ./build-libgcc-pkg.sh
+
+branches:
+	only:
+	- test_branch
