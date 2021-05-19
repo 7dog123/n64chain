@@ -11,29 +11,26 @@ jobs:
     runs-on: ${{ matrix.os[0] }}
     strategy:
       matrix:
-        os: [[macos-latest, bash], [ubuntu-latest, bash], widows-latest, mysys2]]
-        	defaults:
-        		run:
-        			shell: ${{ matrix.os[1] }} {0}
+        os: [[macos-latest, bash], [ubuntu-latest, bash], [windows-latest, msys2]]
+    defaults:
+     run:
+      shell: ${{ matrix.os[1] }} {0}
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
     
-    - name: Install Ubuntu texinfo bison flex libucl-dev
-      if: matrix.os == 'ubuntu-latest'
+    - name: Install Ubuntu texinfo bison flex
+      if: matrix.os[0] == 'ubuntu-latest'
       run: |
         sudo apt-get update
         sudo apt-get -y install texinfo bison flex gettext libgmp3-dev libmpfr-dev libmpc-dev
     
-    - name: Install Mac texinfo bison flex ucl
-      if: matrix.os == 'macOS-latest'
+    - name: Install Mac texinfo bison flex
+      if: matrix.os[0] == 'macOS-latest'
       run: |
         brew update
         brew install texinfo bison flex gnu-sed gsl gmp mpfr
-	
-	- name: Install MSYS2 texinfo bison flex
+    - name: Install MSYS2 texinfo bison flex
       if: matrix.os[0] == 'windows-latest'
       uses: msys2/setup-msys2@v2
       with:
@@ -41,52 +38,10 @@ jobs:
         install: base-devel git make texinfo flex bison patch binutils mingw-w64-i686-gcc mpc-devel
         update: true
         shell: msys2 {0}
-	
+
     - name: Runs all the stages in the shell
       run: |
         export N64=$PWD/crashsdk
         export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
         export PATH=$PATH:$N64/crashsdk/bin
         ./toolchain.sh
-
-    - name: Get short SHA
-      id: slug
-      run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
-    
-    - name: Compress crashsdk folder
-      run: |
-        tar -zcvf crashsdk.tar.gz crashsdk
-    
-    - uses: actions/upload-artifact@v2
-      with:
-        name: crashsdk-${{ steps.slug.outputs.sha8 }}-${{matrix.os}}
-        path: crashsdk.tar.gz
-    
-    - name: Rename crashsdk.tar.gz file
-      run: |
-        mv crashsdk.tar.gz crashsdk-${{matrix.os}}.tar.gz
-
-    - name: Extract tag name
-      if: startsWith(github.ref, 'refs/tags/')
-      id: tag
-      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-
-    - name: Create pre-release
-      if: github.ref == 'refs/heads/master'
-      uses: softprops/action-gh-release@v1
-      with:
-        files: crashsdk-${{matrix.os}}.tar.gz
-        prerelease: true
-        name: "Development build"
-        tag_name: "latest"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Release
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: crashsdk-${{matrix.os}}.tar.gz
-        tag_name: ${{ steps.tag.outputs.VERSION }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
