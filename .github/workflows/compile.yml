@@ -4,41 +4,44 @@ on:
   push:
   pull_request:
   repository_dispatch:
-    types: [run_build, run_release]
+    types: [run_build]
 
 jobs:
   build:
     runs-on: ${{ matrix.os[0] }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest, msys2]
-     
+        os: [[macos-latest, bash], [ubuntu-latest, bash], widows-latest, mysys2]]
+        	defaults:
+        		run:
+        			shell: ${{ matrix.os[1] }} {0}
+
     steps:
     - uses: actions/checkout@v2
-		with:
+      with:
         fetch-depth: 0
-        
-    - name: Install Ubuntu texinfo bison flex
-      if: matrix.os[0] == 'ubuntu-latest'
+    
+    - name: Install Ubuntu texinfo bison flex libucl-dev
+      if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get -y install texinfo bison flex libgmp-dev libmpfr-dev libmpc-dev checkinstall
-        
-    - name: Install Mac texinfo bison flex
-      if: matrix.os[0] == 'macOS-latest'
+        sudo apt-get -y install texinfo bison flex gettext libgmp3-dev libmpfr-dev libmpc-dev
+    
+    - name: Install Mac texinfo bison flex ucl
+      if: matrix.os == 'macOS-latest'
       run: |
         brew update
-        brew install checkinstall texinfo bison flex gnu-sed gsl gmp mpfr
-        
-    - name: Install MSYS2 texinfo bison flex
+        brew install texinfo bison flex gnu-sed gsl gmp mpfr
+	
+	- name: Install MSYS2 texinfo bison flex
       if: matrix.os[0] == 'windows-latest'
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW32
-        install: base-devel checkinstall wget make texinfo flex bison binutils mingw-w64-i686-gcc mpc-devel
+        install: base-devel git make texinfo flex bison patch binutils mingw-w64-i686-gcc mpc-devel
         update: true
         shell: msys2 {0}
-
+	
     - name: Runs all the stages in the shell
       run: |
         export N64=$PWD/crashsdk
@@ -52,7 +55,7 @@ jobs:
     
     - name: Compress crashsdk folder
       run: |
-        tar -zcvf crashsdk.tar.gz /opt/crashsdk
+        tar -zcvf crashsdk.tar.gz crashsdk
     
     - uses: actions/upload-artifact@v2
       with:
@@ -83,7 +86,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
-        files: n64chain-${{matrix.os}}.tar.gz
+        files: crashsdk-${{matrix.os}}.tar.gz
         tag_name: ${{ steps.tag.outputs.VERSION }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
