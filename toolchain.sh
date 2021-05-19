@@ -9,6 +9,9 @@ mkdir -p build || { echo "ERROR: Could not create the build directory."; exit 1;
 ## Enter the build directory.
 cd build || { echo "ERROR: Could not enter the build directory."; exit 1; }
 
+## Create the tarballs directory.
+mkdir -p tarballs || { echo "ERROR: Could not create the build directory."; exit 1; }
+
 ## Fetch the depend scripts.
 DEPEND_SCRIPTS=(`ls ../depends/*.sh | sort`)
 
