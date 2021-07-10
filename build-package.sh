@@ -52,7 +52,7 @@ if [ ! -f stamps/binutils-configure ]; then
     --prefix="${INSTALL_PATH}" \
     --with-lib-path="${INSTALL_PATH}/lib" \
     --target=mips64-elf --with-arch=vr4300 \
-    --host=arm-linux-gnueabihf \
+    --build=arm-linux-gnueabihf \
     --program-prefix=mips-n64- \
     --enable-64-bit-bfd \
     --enable-plugins \
@@ -101,7 +101,7 @@ if [ ! -f stamps/gcc-configure ]; then
   ../gcc-source/configure \
     --prefix="${INSTALL_PATH}" \
     --target=mips64-elf --with-arch=vr4300 \
-    --host=arm-linux-gnueabihf \
+    --build=arm-linux-gnueabihf \
     --program-prefix=mips-n64- \
     --enable-languages=c,c++ --without-headers --with-newlib \
     --with-gnu-as=${INSTALL_PATH}/bin/mips-n64-as \

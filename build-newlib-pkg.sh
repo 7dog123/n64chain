@@ -24,7 +24,7 @@ test -f newlib-$NEWLIB_V.tar.gz || wget -c ftp://sourceware.org/pub/newlib/newli
 test -d newlib-$NEWLIB_V || tar -xzf newlib-$NEWLIB_V.tar.gz
 # Compile newlib
 cd newlib-$NEWLIB_V
-RANLIB_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-ranlib CC_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-gcc CXX_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-g++ AR_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-ar CFLAGS_FOR_TARGET="-mabi=32 -ffreestanding -mfix4300 -G 0 -fno-PIC -O2" CXXFLAGS_FOR_TARGET="-mabi=32 -ffreestanding -mfix4300 -G 0 -fno-PIC -O2" ./configure --target=mips64-elf --host=arm-linux-gnueabihf --prefix=${INSTALL_PATH} --with-cpu=mips64vr4300 --disable-threads --disable-libssp --disable-werror
+RANLIB_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-ranlib CC_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-gcc CXX_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-g++ AR_FOR_TARGET=${INSTALL_PATH}/bin/mips-n64-ar CFLAGS_FOR_TARGET="-mabi=32 -ffreestanding -mfix4300 -G 0 -fno-PIC -O2" CXXFLAGS_FOR_TARGET="-mabi=32 -ffreestanding -mfix4300 -G 0 -fno-PIC -O2" ./configure --target=mips64-elf --build=arm-linux-gnueabihf --prefix=${INSTALL_PATH} --with-cpu=mips64vr4300 --disable-threads --disable-libssp --disable-werror
 make -j${numproc}
 
 sudo checkinstall --pkgname newlib-mips-n64 --install=no
