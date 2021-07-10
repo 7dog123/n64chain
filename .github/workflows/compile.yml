@@ -37,7 +37,7 @@ jobs:
     
     - name: Compress crashsdk folder
       run: |
-        tar -zcvf crashsdk.tar.gz /opt/crashsdk
+        tar -zcvfP crashsdk.tar.gz /opt/crashsdk
     
     - uses: actions/upload-artifact@v2
       with:
@@ -54,7 +54,7 @@ jobs:
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
     - name: Create pre-release
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/armhf'
       uses: softprops/action-gh-release@v1
       with:
         files: crashsdk-${{matrix.os}}.tar.gz
