@@ -54,7 +54,7 @@ if [ ! -f stamps/binutils-configure ]; then
     --target=mips64-elf --with-arch=vr4300 \
     --host=arm-linux-gnueabihf \
     --program-prefix=mips-n64- \
-    --enabe-64-bit-bfd \
+    --enable-64-bit-bfd \
     --enable-plugins \
     --enable-shared \
     --disable-gold \
